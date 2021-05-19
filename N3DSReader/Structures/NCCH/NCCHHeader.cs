@@ -35,7 +35,7 @@ namespace N3DSReader.Structures.NCCH
     {
         public string Signature { get; }                // 0x000, 0x100
         public string MagicNumber { get; }              // 0x100, 0x004
-        public int Size { get; }                       // 0x104, 0x004
+        public long Size { get; }                       // 0x104, 0x004
         public int PartitionID { get; }                 // 0x108, 0x008
         public int MarkerCode { get; }                  // 0x110, 0x002
         public int Version { get; }                     // 0x112, 0x002
@@ -49,25 +49,27 @@ namespace N3DSReader.Structures.NCCH
         public ContentType ContentType { get; }         // 0x18d, 0x001
         public int ContentUnitSize { get; }             // 0x18e, 0x001
         public Bitmasks Bitmasks { get; }               // 0x18f, 0x001
-        public int PlainRegionOffset { get; }           // 0x190, 0x004
-        public int PlainRegionSize { get; }             // 0x194, 0x004
-        public int LogoRegionOffset { get; }            // 0x198, 0x004
-        public int LogoRegionSize { get; }              // 0x19c, 0x004
-        public int ExeFSOffset { get; }                 // 0x1a0, 0x004
-        public int ExeFSSize { get; }                   // 0x1a4, 0x004
-        public int ExeFSHashRegionSize { get; }         // 0x1a8, 0x004
-        public int RomFSOffset { get; }                 // 0x1b0, 0x004
-        public int RomFSSize { get; }                   // 0x1b4, 0x004
-        public int RomFSHashRegionSize { get; }         // 0x1b8, 0x004
+        public long PlainRegionOffset { get; }           // 0x190, 0x004
+        public long PlainRegionSize { get; }             // 0x194, 0x004
+        public long LogoRegionOffset { get; }            // 0x198, 0x004
+        public long LogoRegionSize { get; }              // 0x19c, 0x004
+        public long ExeFSOffset { get; }                 // 0x1a0, 0x004
+        public long ExeFSSize { get; }                   // 0x1a4, 0x004
+        public long ExeFSHashRegionSize { get; }         // 0x1a8, 0x004
+        public long RomFSOffset { get; }                 // 0x1b0, 0x004
+        public long RomFSSize { get; }                   // 0x1b4, 0x004
+        public long RomFSHashRegionSize { get; }         // 0x1b8, 0x004
         public string ExeFSSuperblockHash { get; }      // 0x1c0, 0x020
         public string RomFSSuperblockHash { get; }      // 0x1e0, 0x020
+        public long Offset { get; set; }
 
-        public NCCHHeader(byte[] bytes)
+        public NCCHHeader(byte[] bytes, long offset)
         {
             if (bytes.Length != 512) throw new ArgumentException("There should be 512 bytes!");
+            Offset = offset;
             Signature = Hex.Format(bytes, 0x000, 0x100);
             MagicNumber = Hex.ToString(bytes, 0x100, 0x004);
-            Size = Hex.ParseInt(bytes, 0x104, 0x004) * 512;
+            Size = Hex.ParseInt(bytes, 0x104, 0x004) * (long)512;
             PartitionID = Hex.ParseInt(bytes, 0x108, 0x008);
             MarkerCode = Hex.ParseInt16(bytes, 0x110, 0x002);
             Version = Hex.ParseInt16(bytes, 0x112, 0x002);
@@ -81,16 +83,16 @@ namespace N3DSReader.Structures.NCCH
             ContentType = (ContentType)Hex.ParseInt(bytes, 0x18d, 0x001);
             ContentUnitSize = Hex.ParseInt(bytes, 0x18e, 0x001);
             Bitmasks = (Bitmasks)Hex.ParseInt(bytes, 0x18f, 0x001);
-            PlainRegionOffset = Hex.ParseInt(bytes, 0x190, 0x004) * 512;
-            PlainRegionSize = Hex.ParseInt(bytes, 0x194, 0x004) * 512;
-            LogoRegionOffset = Hex.ParseInt(bytes, 0x198, 0x004) * 512;
-            LogoRegionSize = Hex.ParseInt(bytes, 0x19c, 0x004) * 512;
-            ExeFSOffset = Hex.ParseInt(bytes, 0x1a0, 0x004) * 512;
-            ExeFSSize = Hex.ParseInt(bytes, 0x1a4, 0x004) * 512;
-            ExeFSHashRegionSize = Hex.ParseInt(bytes, 0x1a8, 0x004) * 512;
-            RomFSOffset = Hex.ParseInt(bytes, 0x1b0, 0x004) * 512;
-            RomFSSize = Hex.ParseInt(bytes, 0x1b4, 0x004) * 512;
-            RomFSHashRegionSize = Hex.ParseInt(bytes, 0x1b8, 0x004) * 512;
+            PlainRegionOffset = Hex.ParseInt(bytes, 0x190, 0x004) * 512 + Offset;
+            PlainRegionSize = Hex.ParseInt(bytes, 0x194, 0x004) * (long)512;
+            LogoRegionOffset = Hex.ParseInt(bytes, 0x198, 0x004) * 512 + Offset;
+            LogoRegionSize = Hex.ParseInt(bytes, 0x19c, 0x004) * (long)512;
+            ExeFSOffset = Hex.ParseInt(bytes, 0x1a0, 0x004) * 512 + Offset;
+            ExeFSSize = Hex.ParseInt(bytes, 0x1a4, 0x004) * (long)512;
+            ExeFSHashRegionSize = Hex.ParseInt(bytes, 0x1a8, 0x004) * (long)512;
+            RomFSOffset = Hex.ParseInt(bytes, 0x1b0, 0x004) * 512 + Offset;
+            RomFSSize = Hex.ParseInt(bytes, 0x1b4, 0x004) * (long)512;
+            RomFSHashRegionSize = Hex.ParseInt(bytes, 0x1b8, 0x004) * (long)512;
             ExeFSSuperblockHash = Hex.Format(bytes, 0x1c0, 0x020);
             RomFSSuperblockHash = Hex.Format(bytes, 0x1e0, 0x020);
         }

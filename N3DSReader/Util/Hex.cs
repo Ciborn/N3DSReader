@@ -18,9 +18,6 @@ namespace N3DSReader.Util
             bytes.Length > 1 ? BitConverter.ToInt32(bytes) : Convert.ToInt32(bytes[0]);
         public static int ParseInt(byte[] bytes, int start, int size) => ParseInt(bytes[start..(start + size)]);
 
-        public static uint ParseUInt(byte[] bytes) => BitConverter.ToUInt32(bytes);
-        public static uint ParseUInt(byte[] bytes, int start, int size) => ParseUInt(bytes[start..(start + size)]);
-
         public static string ToString(byte[] bytes) => Encoding.UTF8.GetString(bytes, 0, bytes.Length).TrimEnd('\0');
         public static string ToString(byte[] bytes, int start, int size) => ToString(bytes[start..(start + size)]);
 

@@ -19,20 +19,22 @@ namespace N3DSReader.Structures.NCSD
     {
         public string Signature { get; }              // 0x000, 0x100
         public string MagicNumber { get; }            // 0x100, 0x004
-        public uint Size { get; }                     // 0x104, 0x004
+        public long Size { get; }                     // 0x104, 0x004
         public int MediaID { get; }                   // 0x108, 0x008
         public FSType FSType { get; }                 // 0x110, 0x008
         public CryptTable CryptTable { get; }         // 0x118, 0x008
         public PartitionTable PartitionTable { get; } // 0x120, 0x040
+        public long Offset { get; set; }
 
-        public NCSDHeader(byte[] bytes)
+        public NCSDHeader(byte[] bytes, long offset = 0)
         {
             if (bytes.Length != 512) throw new ArgumentException("There should be 512 bytes!");
-            Signature = Hex.Format(bytes[0..256]);
-            MagicNumber = Hex.Format(bytes[256..260]);
-            Size = BitConverter.ToUInt32(bytes[260..264].ToArray(), 0) * 512;
-            MediaID = BitConverter.ToInt32(bytes[264..272].ToArray(), 0);
-            FSType = (FSType)BitConverter.ToInt32(bytes[272..280].ToArray(), 0);
+            Offset = offset;
+            Signature = Hex.Format(bytes, 0x000, 0x100);
+            MagicNumber = Hex.ToString(bytes, 0x100, 0x004);
+            Size = Hex.ParseInt(bytes, 0x104, 0x004) * (long)512;
+            MediaID = Hex.ParseInt(bytes, 0x108, 0x008);
+            FSType = (FSType)Hex.ParseInt(bytes, 0x110, 0x008);
             CryptTable = new CryptTable(bytes[280..288]);
             PartitionTable = new PartitionTable(bytes[288..352]);
         }
